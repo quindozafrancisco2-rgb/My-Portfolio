@@ -4,10 +4,97 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Francisco Quindoza - Virtual Assistant</title>
+
+    <!-- Your built app -->
     <script type="module" crossorigin src="./assets/index--t5PLDKS.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CeQYuxiB.css">
+    <link rel="stylesheet" crossorigin href="./assets/index-CeQYuxiB.css" />
   </head>
+
   <body>
     <div id="root"></div>
+
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <script>
+      (function () {
+        // 1) Init EmailJS
+        emailjs.init("UPrY5GUd40w7Haz5y");
+
+        // 2) Helper to attach submit handler once the form exists
+        function attachEmailHandler() {
+          const form = document.querySelector("form");
+          if (!form) return false;
+
+          // Prevent attaching multiple times
+          if (form.dataset.emailjsBound === "1") return true;
+          form.dataset.emailjsBound = "1";
+
+          form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            // Try to find inputs by name first, then fallback to common patterns
+            const firstNameEl =
+              form.querySelector("[name='firstName']") ||
+              form.querySelector("[name='first_name']") ||
+              form.querySelector("#firstName") ||
+              form.querySelector("#first_name");
+
+            const lastNameEl =
+              form.querySelector("[name='lastName']") ||
+              form.querySelector("[name='last_name']") ||
+              form.querySelector("#lastName") ||
+              form.querySelector("#last_name");
+
+            const emailEl =
+              form.querySelector("[name='email']") ||
+              form.querySelector("#email") ||
+              form.querySelector("input[type='email']");
+
+            const subjectEl =
+              form.querySelector("[name='subject']") ||
+              form.querySelector("#subject");
+
+            const messageEl =
+              form.querySelector("[name='message']") ||
+              form.querySelector("#message") ||
+              form.querySelector("textarea");
+
+            const templateParams = {
+              first_name: firstNameEl ? firstNameEl.value : "",
+              last_name: lastNameEl ? lastNameEl.value : "",
+              email: emailEl ? emailEl.value : "",
+              subject: subjectEl ? subjectEl.value : "",
+              message: messageEl ? messageEl.value : ""
+            };
+
+            emailjs
+              .send("service_28gj19l", "template_dpfs4di", templateParams)
+              .then(function () {
+                alert("Message sent successfully!");
+                form.reset();
+              })
+              .catch(function () {
+                alert("Failed to send message. Please try again.");
+              });
+          });
+
+          return true;
+        }
+
+        // 3) Try now (in case form is already rendered)
+        if (attachEmailHandler()) return;
+
+        // 4) Observe DOM until the form appears (reliable for React/Vite)
+        const observer = new MutationObserver(function () {
+          if (attachEmailHandler()) observer.disconnect();
+        });
+
+        observer.observe(document.documentElement, {
+          childList: true,
+          subtree: true
+        });
+      })();
+    </script>
   </body>
 </html>
