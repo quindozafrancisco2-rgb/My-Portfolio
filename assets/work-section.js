@@ -1,33 +1,27 @@
 /* assets/work-section.js
-   - Landscape videos: embedded Drive preview
-   - Portrait videos: thumbnail + open in new tab (prevents cropping)
+   - Videos: Google Drive preview embeds in a consistent 16:9 frame
+   - Canva Designs: images
+   - Photoshop Edits: images
 */
 
 (function () {
   const CONFIG = {
-    // For portrait vids, add a thumbnail image you upload to ./images/
     videos: [
       {
         title: "Festival Cuts",
         desc: "Short highlight edit for event footage.",
-        fileId: "1s-k4OhodcbhGxk6vWvSiE9jetPrY1Nxi",
-        ratio: "landscape"
+        fileId: "1s-k4OhodcbhGxk6vWvSiE9jetPrY1Nxi"
       },
       {
         title: "Canned Drinks Clips",
         desc: "Short product montage.",
-        fileId: "1FkVGjSa7MBlP9Fg7qGWBrAOlHgZcaGJn",
-        ratio: "portrait",
-        thumb: "./images/video-thumb-canned.jpg"
+        fileId: "1FkVGjSa7MBlP9Fg7qGWBrAOlHgZcaGJn"
       },
       {
         title: "Smoothie Clips",
         desc: "Short product montage.",
-        fileId: "1duQarrqFCnwShNmkKkgQDa_1f2a47Rnj",
-        ratio: "portrait",
-        thumb: "./images/video-thumb-smoothie.jpg"
+        fileId: "1duQarrqFCnwShNmkKkgQDa_1f2a47Rnj"
       }
-      // Add more videos by copying the object above
     ],
 
     canvaDesigns: [
@@ -170,12 +164,14 @@
         display:block;
       }
 
-      /* Landscape embed only */
+      /* VIDEO: always landscape 16:9.
+         Portrait clips will naturally show with black side space INSIDE the Drive player. */
       .video-embed{
         position:relative;
         width:100%;
         aspect-ratio: 16 / 9;
-        background: rgba(2,6,23,0.75);
+        background: rgba(2,6,23,0.8);
+        overflow:hidden;
       }
       .video-embed iframe{
         position:absolute;
@@ -184,66 +180,6 @@
         height:100%;
         border:0;
         display:block;
-      }
-
-      /* Portrait card: thumbnail + button */
-      .video-thumb{
-        width:100%;
-        aspect-ratio: 16 / 9; /* keep grid consistent */
-        background: rgba(2,6,23,0.75);
-        position: relative;
-        overflow:hidden;
-      }
-      .video-thumb img{
-        width:100%;
-        height:100%;
-        object-fit:cover;
-        display:block;
-        filter: saturate(1.02);
-      }
-      .video-thumb .play{
-        position:absolute;
-        inset:0;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        pointer-events:none;
-      }
-      .video-thumb .play span{
-        width:54px;
-        height:54px;
-        border-radius:999px;
-        background: rgba(245, 158, 11, 0.92);
-        display:grid;
-        place-items:center;
-        box-shadow: 0 14px 30px rgba(0,0,0,0.35);
-      }
-      .video-thumb .play span:before{
-        content:"";
-        display:block;
-        width:0;height:0;
-        border-left: 14px solid #0b1220;
-        border-top: 9px solid transparent;
-        border-bottom: 9px solid transparent;
-        margin-left: 3px;
-      }
-
-      .open-link{
-        position:absolute;
-        top:10px;
-        right:10px;
-        width:30px;
-        height:30px;
-        border-radius:10px;
-        background: rgba(2,6,23,0.6);
-        border:1px solid rgba(148,163,184,0.25);
-        display:grid;
-        place-items:center;
-      }
-      .open-link svg{
-        width:16px;height:16px;
-        opacity:0.9;
-        fill: #e5e7eb;
       }
     `;
     document.head.appendChild(style);
@@ -258,51 +194,12 @@
       .replaceAll("'", "&#039;");
   }
 
-  function openIcon() {
-    return `
-      <span class="open-link" aria-hidden="true">
-        <svg viewBox="0 0 24 24">
-          <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"></path>
-          <path d="M5 5h7v2H7v12h12v-5h2v7H5V5z"></path>
-        </svg>
-      </span>
-    `;
-  }
-
   function buildCardVideo(v) {
-    const isPortrait = (v.ratio || "").toLowerCase() === "portrait";
-    const previewUrl = `https://drive.google.com/file/d/${encodeURIComponent(v.fileId)}/preview`;
-    const viewUrl = `https://drive.google.com/file/d/${encodeURIComponent(v.fileId)}/view`;
-
-    // Portrait: thumbnail card to avoid Drive player cropping
-    if (isPortrait) {
-      const thumb = v.thumb || "";
-      const thumbHtml = thumb
-        ? `<img src="${thumb}" alt="${escapeHtml(v.title)} thumbnail" loading="lazy" />`
-        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(226,232,240,0.7);font-size:14px;">
-             Portrait Video
-           </div>`;
-
-      return `
-        <a class="work-card" href="${viewUrl}" target="_blank" rel="noreferrer">
-          <div class="video-thumb">
-            ${thumbHtml}
-            ${openIcon()}
-            <div class="play"><span></span></div>
-          </div>
-          <div class="work-meta">
-            <h3 class="work-name">${escapeHtml(v.title)}</h3>
-            <p class="work-desc">${escapeHtml(v.desc)}</p>
-          </div>
-        </a>
-      `;
-    }
-
-    // Landscape: embed
+    const src = `https://drive.google.com/file/d/${encodeURIComponent(v.fileId)}/preview`;
     return `
       <article class="work-card">
         <div class="video-embed">
-          <iframe src="${previewUrl}" allow="autoplay" title="${escapeHtml(v.title)}"></iframe>
+          <iframe src="${src}" allow="autoplay" title="${escapeHtml(v.title)}"></iframe>
         </div>
         <div class="work-meta">
           <h3 class="work-name">${escapeHtml(v.title)}</h3>
