@@ -7,18 +7,37 @@
 
 (function () {
   const CONFIG = {
-    // Replace these with your Google Drive FILE IDs (the part between /d/ and /view)
+    // Google Drive FILE IDs (between /d/ and /view)
+    // ratio: "landscape" (16:9) or "portrait" (9:16)
     videos: [
       {
         title: "Festival Cuts",
         desc: "Short highlight edit for event footage.",
-        fileId: "1s-k4OhodcbhGxk6vWvSiE9jetPrY1Nxi"
+        fileId: "1s-k4OhodcbhGxk6vWvSiE9jetPrY1Nxi",
+        ratio: "landscape"
       },
       {
-        title: "Product Clips",
-        desc: "Clean product montage.",
-        fileId: "1TZak2PAVfuVJvPFohf0F53jTDkR45V8h"
-      }
+        title: "Canned Drinks Clips",
+        desc: "Short product montage.",
+        fileId: "1FkVGjSa7MBlP9Fg7qGWBrAOlHgZcaGJn",
+        ratio: "portrait"
+      },
+
+      // ADDITIONAL VIDEO 3 (replace fileId)
+      {
+        title: "Smoothie Clips",
+        desc: "Short product montage.",
+        fileId: "1duQarrqFCnwShNmkKkgQDa_1f2a47Rnj",
+        ratio: "portrait"
+      },
+
+      // ADDITIONAL VIDEO 4 (replace fileId)
+//      {
+//        title: "Video Project 4",
+//        desc: "Short edit sample.",
+//        fileId: "PASTE_FILE_ID_4_HERE",
+//        ratio: "landscape"
+//      }
     ],
 
     canvaDesigns: [
@@ -178,12 +197,19 @@
         display:block;
       }
 
+      /* VIDEO EMBED: default landscape (16:9) */
       .video-embed{
         position:relative;
         width:100%;
         aspect-ratio: 16 / 9;
         background: rgba(2,6,23,0.7);
       }
+
+      /* Portrait mode (9:16) so portrait vids are not “compressed” */
+      .video-embed.is-portrait{
+        aspect-ratio: 9 / 16;
+      }
+
       .video-embed iframe{
         position:absolute;
         inset:0;
@@ -197,9 +223,10 @@
 
   function buildCardVideo(v) {
     const src = `https://drive.google.com/file/d/${encodeURIComponent(v.fileId)}/preview`;
+    const portraitClass = (v.ratio || "").toLowerCase() === "portrait" ? "is-portrait" : "";
     return `
       <article class="work-card">
-        <div class="video-embed">
+        <div class="video-embed ${portraitClass}">
           <iframe src="${src}" allow="autoplay" title="${escapeHtml(v.title)}"></iframe>
         </div>
         <div class="work-meta">
@@ -293,12 +320,9 @@
   }
 
   function findTargetSection() {
-    // Tries to find the existing section by heading text
     const headings = Array.from(document.querySelectorAll("h1, h2, h3"));
     const h = headings.find((x) => (x.textContent || "").trim().toLowerCase() === "my creative work");
     if (!h) return null;
-
-    // Take the nearest section ancestor, fallback to nearest div wrapper
     return h.closest("section") || h.closest("div");
   }
 
@@ -308,25 +332,19 @@
     const target = findTargetSection();
     if (!target) return false;
 
-    // Replace the entire section content
     target.outerHTML = sectionHTML();
 
-    // Wire tabs on the new section
     const newSection = document.getElementById("work");
     if (newSection) wireTabs(newSection);
 
     return true;
   }
 
-  // Wait for React to render then replace
   let tries = 0;
   const maxTries = 40;
 
   const timer = setInterval(() => {
     tries += 1;
-    if (replaceSection() || tries >= maxTries) {
-      clearInterval(timer);
-    }
+    if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
-
 })();
