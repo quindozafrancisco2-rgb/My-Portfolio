@@ -12,12 +12,12 @@
       {
         title: "Festival Cuts",
         desc: "Short highlight edit for event footage.",
-        fileId: "FILE_ID_1"
+        fileId: "1s-k4OhodcbhGxk6vWvSiE9jetPrY1Nxi"
       },
       {
-        title: "Product Promo",
-        desc: "Clean product montage with pacing and captions.",
-        fileId: "FILE_ID_2"
+        title: "Product Clips",
+        desc: "Clean product montage.",
+        fileId: "1TZak2PAVfuVJvPFohf0F53jTDkR45V8h"
       }
     ],
 
@@ -328,4 +328,5 @@
       clearInterval(timer);
     }
   }, 300);
+
 })();
