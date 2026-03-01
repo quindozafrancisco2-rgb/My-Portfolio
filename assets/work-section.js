@@ -1,14 +1,11 @@
 /* assets/work-section.js
-   Replaces the existing "My Creative Work" section with a tabbed gallery:
-   - Videos (Google Drive preview embeds)
-   - Canva Designs (images)
-   - Photoshop Edits (images)
+   - Landscape videos: embedded Drive preview
+   - Portrait videos: thumbnail + open in new tab (prevents cropping)
 */
 
 (function () {
   const CONFIG = {
-    // Google Drive FILE IDs (between /d/ and /view)
-    // ratio: "landscape" (16:9) or "portrait" (9:16)
+    // For portrait vids, add a thumbnail image you upload to ./images/
     videos: [
       {
         title: "Festival Cuts",
@@ -20,53 +17,28 @@
         title: "Canned Drinks Clips",
         desc: "Short product montage.",
         fileId: "1FkVGjSa7MBlP9Fg7qGWBrAOlHgZcaGJn",
-        ratio: "portrait"
+        ratio: "portrait",
+        thumb: "./images/video-thumb-canned.jpg"
       },
       {
         title: "Smoothie Clips",
         desc: "Short product montage.",
         fileId: "1duQarrqFCnwShNmkKkgQDa_1f2a47Rnj",
-        ratio: "portrait"
+        ratio: "portrait",
+        thumb: "./images/video-thumb-smoothie.jpg"
       }
-
-      // Add a 4th video like this:
-      // ,{
-      //   title: "Video Project 4",
-      //   desc: "Short edit sample.",
-      //   fileId: "PASTE_FILE_ID_4_HERE",
-      //   ratio: "landscape"
-      // }
+      // Add more videos by copying the object above
     ],
 
     canvaDesigns: [
-      {
-        title: "Festival Poster",
-        desc: "Bright event poster layout and typography.",
-        src: "./images/portfolio-design-1.jpg"
-      },
-      {
-        title: "Coffee Promo",
-        desc: "Product creative with bold focal point.",
-        src: "./images/portfolio-design-2.jpg"
-      },
-      {
-        title: "Portfolio Cover",
-        desc: "Modern geometric key visual.",
-        src: "./images/portfolio-design-3.jpg"
-      }
+      { title: "Festival Poster", desc: "Bright event poster layout and typography.", src: "./images/portfolio-design-1.jpg" },
+      { title: "Coffee Promo", desc: "Product creative with bold focal point.", src: "./images/portfolio-design-2.jpg" },
+      { title: "Portfolio Cover", desc: "Modern geometric key visual.", src: "./images/portfolio-design-3.jpg" }
     ],
 
     photoshopEdits: [
-      {
-        title: "Before and After Retouch",
-        desc: "Skin tone balance, clarity, and background cleanup.",
-        src: "./images/portfolio-photo-1.jpg"
-      },
-      {
-        title: "Color and Lighting",
-        desc: "Contrast tuning and color grading for a cleaner look.",
-        src: "./images/portfolio-photo-2.jpg"
-      }
+      { title: "Before and After Retouch", desc: "Skin tone balance, clarity, and background cleanup.", src: "./images/portfolio-photo-1.jpg" },
+      { title: "Color and Lighting", desc: "Contrast tuning and color grading for a cleaner look.", src: "./images/portfolio-photo-2.jpg" }
     ]
   };
 
@@ -106,6 +78,7 @@
         font-size: clamp(14px, 1.6vw, 18px);
         line-height: 1.6;
       }
+
       .work-tabs{
         display:flex;
         gap:14px;
@@ -133,6 +106,7 @@
         color:#0b1220;
         border-color: transparent;
       }
+
       .work-panel{ display:none; }
       .work-panel.is-active{ display:block; }
 
@@ -196,64 +170,139 @@
         display:block;
       }
 
-      /* VIDEO FRAME: consistent height for clean grid */
+      /* Landscape embed only */
       .video-embed{
         position:relative;
         width:100%;
-        height: 220px;
-        background: rgba(2,6,23,0.75);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        overflow:hidden;
-      }
-      @media (max-width: 640px){
-        .video-embed{ height: 240px; }
-      }
-
-      /* Inner stage holds the actual ratio box */
-      .video-stage{
-        position: relative;
-        height: 100%;
-        margin: 0 auto;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        max-width: 100%;
-      }
-
-      /* Landscape uses 16:9 inside the fixed-height frame */
-      .video-stage.is-landscape{
         aspect-ratio: 16 / 9;
+        background: rgba(2,6,23,0.75);
       }
-
-      /* Portrait uses 9:16 inside the fixed-height frame */
-      .video-stage.is-portrait{
-        aspect-ratio: 9 / 16;
-      }
-
-      /* The iframe fills the stage perfectly */
-      .video-stage iframe{
+      .video-embed iframe{
+        position:absolute;
+        inset:0;
         width:100%;
         height:100%;
         border:0;
         display:block;
       }
+
+      /* Portrait card: thumbnail + button */
+      .video-thumb{
+        width:100%;
+        aspect-ratio: 16 / 9; /* keep grid consistent */
+        background: rgba(2,6,23,0.75);
+        position: relative;
+        overflow:hidden;
+      }
+      .video-thumb img{
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
+        filter: saturate(1.02);
+      }
+      .video-thumb .play{
+        position:absolute;
+        inset:0;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        pointer-events:none;
+      }
+      .video-thumb .play span{
+        width:54px;
+        height:54px;
+        border-radius:999px;
+        background: rgba(245, 158, 11, 0.92);
+        display:grid;
+        place-items:center;
+        box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+      }
+      .video-thumb .play span:before{
+        content:"";
+        display:block;
+        width:0;height:0;
+        border-left: 14px solid #0b1220;
+        border-top: 9px solid transparent;
+        border-bottom: 9px solid transparent;
+        margin-left: 3px;
+      }
+
+      .open-link{
+        position:absolute;
+        top:10px;
+        right:10px;
+        width:30px;
+        height:30px;
+        border-radius:10px;
+        background: rgba(2,6,23,0.6);
+        border:1px solid rgba(148,163,184,0.25);
+        display:grid;
+        place-items:center;
+      }
+      .open-link svg{
+        width:16px;height:16px;
+        opacity:0.9;
+        fill: #e5e7eb;
+      }
     `;
     document.head.appendChild(style);
   }
 
-  function buildCardVideo(v) {
-    const src = `https://drive.google.com/file/d/${encodeURIComponent(v.fileId)}/preview`;
-    const ratioClass =
-      (v.ratio || "landscape").toLowerCase() === "portrait" ? "is-portrait" : "is-landscape";
+  function escapeHtml(str) {
+    return String(str || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
 
+  function openIcon() {
+    return `
+      <span class="open-link" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"></path>
+          <path d="M5 5h7v2H7v12h12v-5h2v7H5V5z"></path>
+        </svg>
+      </span>
+    `;
+  }
+
+  function buildCardVideo(v) {
+    const isPortrait = (v.ratio || "").toLowerCase() === "portrait";
+    const previewUrl = `https://drive.google.com/file/d/${encodeURIComponent(v.fileId)}/preview`;
+    const viewUrl = `https://drive.google.com/file/d/${encodeURIComponent(v.fileId)}/view`;
+
+    // Portrait: thumbnail card to avoid Drive player cropping
+    if (isPortrait) {
+      const thumb = v.thumb || "";
+      const thumbHtml = thumb
+        ? `<img src="${thumb}" alt="${escapeHtml(v.title)} thumbnail" loading="lazy" />`
+        : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(226,232,240,0.7);font-size:14px;">
+             Portrait Video
+           </div>`;
+
+      return `
+        <a class="work-card" href="${viewUrl}" target="_blank" rel="noreferrer">
+          <div class="video-thumb">
+            ${thumbHtml}
+            ${openIcon()}
+            <div class="play"><span></span></div>
+          </div>
+          <div class="work-meta">
+            <h3 class="work-name">${escapeHtml(v.title)}</h3>
+            <p class="work-desc">${escapeHtml(v.desc)}</p>
+          </div>
+        </a>
+      `;
+    }
+
+    // Landscape: embed
     return `
       <article class="work-card">
         <div class="video-embed">
-          <div class="video-stage ${ratioClass}">
-            <iframe src="${src}" allow="autoplay" title="${escapeHtml(v.title)}"></iframe>
-          </div>
+          <iframe src="${previewUrl}" allow="autoplay" title="${escapeHtml(v.title)}"></iframe>
         </div>
         <div class="work-meta">
           <h3 class="work-name">${escapeHtml(v.title)}</h3>
@@ -275,15 +324,6 @@
         </div>
       </a>
     `;
-  }
-
-  function escapeHtml(str) {
-    return String(str || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
   }
 
   function sectionHTML() {
