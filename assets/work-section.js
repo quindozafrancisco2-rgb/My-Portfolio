@@ -27,12 +27,12 @@
     canvaDesigns: [
       { title: "Festival Poster", desc: "Bright event poster layout and typography.", src: "./images/portfolio-design-1.jpg" },
       { title: "Coffee Promo", desc: "Product creative with bold focal point.", src: "./images/portfolio-design-2.jpg" },
-      { title: "Portfolio Cover", desc: "Modern geometric key visual.", src: "./images/portfolio-design-3.jpg" }
+      { title: "Poster Design", desc: "Modern style key visual.", src: "./images/portfolio-design-3.jpg" }
     ],
 
     photoshopEdits: [
-      { title: "Before and After Retouch", desc: "Skin tone balance, clarity, and background cleanup.", src: "./images/portfolio-photo-1.jpg" },
-      { title: "Color and Lighting", desc: "Contrast tuning and color grading for a cleaner look.", src: "./images/portfolio-photo-2.jpg" }
+      { title: "Before", desc: "Balance, clarity, and background cleanup.", src: "./images/portfolio-photo-1.jpg" },
+      { title: "After", desc: "Balance, clarity, and background cleanup.", src: "./images/portfolio-photo-2.jpg" }
     ]
   };
 
@@ -311,3 +311,4 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
+
