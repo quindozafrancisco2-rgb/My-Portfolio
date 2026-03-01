@@ -7,8 +7,7 @@
 
 (function () {
   const CONFIG = {
-    // Google Drive FILE IDs (between /d/ and /view)
-    // ratio: "landscape" (16:9) or "portrait" (9:16)
+    // ratio: "landscape" or "portrait"
     videos: [
       {
         title: "Festival Cuts",
@@ -22,22 +21,12 @@
         fileId: "1FkVGjSa7MBlP9Fg7qGWBrAOlHgZcaGJn",
         ratio: "portrait"
       },
-
-      // ADDITIONAL VIDEO 3 (replace fileId)
       {
         title: "Smoothie Clips",
         desc: "Short product montage.",
         fileId: "1duQarrqFCnwShNmkKkgQDa_1f2a47Rnj",
         ratio: "portrait"
-      },
-
-      // ADDITIONAL VIDEO 4 (replace fileId)
-//      {
-//        title: "Video Project 4",
-//        desc: "Short edit sample.",
-//        fileId: "PASTE_FILE_ID_4_HERE",
-//        ratio: "landscape"
-//      }
+      }
     ],
 
     canvaDesigns: [
@@ -108,6 +97,7 @@
         font-size: clamp(14px, 1.6vw, 18px);
         line-height: 1.6;
       }
+
       .work-tabs{
         display:flex;
         gap:14px;
@@ -135,6 +125,7 @@
         color:#0b1220;
         border-color: transparent;
       }
+
       .work-panel{ display:none; }
       .work-panel.is-active{ display:block; }
 
@@ -143,6 +134,7 @@
         grid-template-columns: repeat(3, minmax(0,1fr));
         gap:18px;
         text-align:left;
+        align-items: start;
       }
       @media (max-width: 980px){
         .work-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -197,25 +189,36 @@
         display:block;
       }
 
-      /* VIDEO EMBED: default landscape (16:9) */
+      /* VIDEO: use a consistent height so portrait videos don’t make cards huge */
       .video-embed{
         position:relative;
         width:100%;
-        aspect-ratio: 16 / 9;
-        background: rgba(2,6,23,0.7);
+        height: 220px; /* consistent card height */
+        background: rgba(2,6,23,0.75);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+      @media (max-width: 640px){
+        .video-embed{ height: 240px; }
       }
 
-      /* Portrait mode (9:16) so portrait vids are not “compressed” */
-      .video-embed.is-portrait{
-        aspect-ratio: 9 / 16;
-      }
-
+      /* Make iframe smaller for portrait so it fits nicely in the fixed-height frame */
       .video-embed iframe{
-        position:absolute;
-        inset:0;
         width:100%;
         height:100%;
         border:0;
+      }
+
+      /* For portrait videos, keep height but reduce width so it doesn't look stretched */
+      .video-embed.is-portrait iframe{
+        width: 62%;
+        height: 100%;
+      }
+      @media (max-width: 640px){
+        .video-embed.is-portrait iframe{
+          width: 72%;
+        }
       }
     `;
     document.head.appendChild(style);
