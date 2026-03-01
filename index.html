@@ -93,9 +93,57 @@
       })();
     </script>
 
-    <!-- Work Section Injector (Videos, Canva Designs, Photoshop Edits)
-         Create this file at: ./assets/work-section.js
-    -->
+    <!-- Work Section Injector (Videos, Canva Designs, Photoshop Edits) -->
     <script defer src="./assets/work-section.js"></script>
+
+    <!-- Rename Portfolio tab to Sample Works and link it to #work -->
+    <script>
+      (function () {
+        function applyNavFix() {
+          // Find links/buttons that say "Portfolio" and convert them
+          const candidates = Array.from(document.querySelectorAll("a, button"));
+
+          let changed = false;
+
+          candidates.forEach((el) => {
+            const text = (el.textContent || "").trim().toLowerCase();
+            if (text === "portfolio") {
+              el.textContent = "Sample Works";
+
+              // If it's an <a>, set href to #work
+              if (el.tagName.toLowerCase() === "a") {
+                el.setAttribute("href", "#work");
+              }
+
+              // Ensure click scrolls to #work for both <a> and <button>
+              el.addEventListener("click", function (e) {
+                const target = document.getElementById("work");
+                if (target) {
+                  e.preventDefault();
+                  target.scrollIntoView({ behavior: "smooth", block: "start" });
+                  history.replaceState(null, "", "#work");
+                }
+              });
+
+              changed = true;
+            }
+          });
+
+          return changed;
+        }
+
+        // React renders async, so retry a few times
+        let tries = 0;
+        const maxTries = 30;
+
+        const t = setInterval(() => {
+          const ok = applyNavFix();
+          tries += 1;
+
+          // Stop once found OR after max tries
+          if (ok || tries >= maxTries) clearInterval(t);
+        }, 300);
+      })();
+    </script>
   </body>
 </html>
