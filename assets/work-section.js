@@ -7,7 +7,8 @@
 
 (function () {
   const CONFIG = {
-    // ratio: "landscape" or "portrait"
+    // Google Drive FILE IDs (between /d/ and /view)
+    // ratio: "landscape" (16:9) or "portrait" (9:16)
     videos: [
       {
         title: "Festival Cuts",
@@ -27,6 +28,14 @@
         fileId: "1duQarrqFCnwShNmkKkgQDa_1f2a47Rnj",
         ratio: "portrait"
       }
+
+      // Add a 4th video like this:
+      // ,{
+      //   title: "Video Project 4",
+      //   desc: "Short edit sample.",
+      //   fileId: "PASTE_FILE_ID_4_HERE",
+      //   ratio: "landscape"
+      // }
     ],
 
     canvaDesigns: [
@@ -97,7 +106,6 @@
         font-size: clamp(14px, 1.6vw, 18px);
         line-height: 1.6;
       }
-
       .work-tabs{
         display:flex;
         gap:14px;
@@ -125,7 +133,6 @@
         color:#0b1220;
         border-color: transparent;
       }
-
       .work-panel{ display:none; }
       .work-panel.is-active{ display:block; }
 
@@ -134,7 +141,7 @@
         grid-template-columns: repeat(3, minmax(0,1fr));
         gap:18px;
         text-align:left;
-        align-items: start;
+        align-items:start;
       }
       @media (max-width: 980px){
         .work-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -189,36 +196,48 @@
         display:block;
       }
 
-      /* VIDEO: use a consistent height so portrait videos don’t make cards huge */
+      /* VIDEO FRAME: consistent height for clean grid */
       .video-embed{
         position:relative;
         width:100%;
-        height: 220px; /* consistent card height */
+        height: 220px;
         background: rgba(2,6,23,0.75);
         display:flex;
         align-items:center;
         justify-content:center;
+        overflow:hidden;
       }
       @media (max-width: 640px){
         .video-embed{ height: 240px; }
       }
 
-      /* Make iframe smaller for portrait so it fits nicely in the fixed-height frame */
-      .video-embed iframe{
+      /* Inner stage holds the actual ratio box */
+      .video-stage{
+        position: relative;
+        height: 100%;
+        margin: 0 auto;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        max-width: 100%;
+      }
+
+      /* Landscape uses 16:9 inside the fixed-height frame */
+      .video-stage.is-landscape{
+        aspect-ratio: 16 / 9;
+      }
+
+      /* Portrait uses 9:16 inside the fixed-height frame */
+      .video-stage.is-portrait{
+        aspect-ratio: 9 / 16;
+      }
+
+      /* The iframe fills the stage perfectly */
+      .video-stage iframe{
         width:100%;
         height:100%;
         border:0;
-      }
-
-      /* For portrait videos, keep height but reduce width so it doesn't look stretched */
-      .video-embed.is-portrait iframe{
-        width: 62%;
-        height: 100%;
-      }
-      @media (max-width: 640px){
-        .video-embed.is-portrait iframe{
-          width: 72%;
-        }
+        display:block;
       }
     `;
     document.head.appendChild(style);
@@ -226,11 +245,15 @@
 
   function buildCardVideo(v) {
     const src = `https://drive.google.com/file/d/${encodeURIComponent(v.fileId)}/preview`;
-    const portraitClass = (v.ratio || "").toLowerCase() === "portrait" ? "is-portrait" : "";
+    const ratioClass =
+      (v.ratio || "landscape").toLowerCase() === "portrait" ? "is-portrait" : "is-landscape";
+
     return `
       <article class="work-card">
-        <div class="video-embed ${portraitClass}">
-          <iframe src="${src}" allow="autoplay" title="${escapeHtml(v.title)}"></iframe>
+        <div class="video-embed">
+          <div class="video-stage ${ratioClass}">
+            <iframe src="${src}" allow="autoplay" title="${escapeHtml(v.title)}"></iframe>
+          </div>
         </div>
         <div class="work-meta">
           <h3 class="work-name">${escapeHtml(v.title)}</h3>
