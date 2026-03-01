@@ -18,10 +18,9 @@
 
     <script>
       (function () {
-        // 1) Init EmailJS
+        // Init EmailJS (Public Key)
         emailjs.init("UPrY5GUd40w7Haz5y");
 
-        // 2) Helper to attach submit handler once the form exists
         function attachEmailHandler() {
           const form = document.querySelector("form");
           if (!form) return false;
@@ -33,7 +32,7 @@
           form.addEventListener("submit", function (e) {
             e.preventDefault();
 
-            // Try to find inputs by name first, then fallback to common patterns
+            // Inputs (try name first, then ids, then generic fallbacks)
             const firstNameEl =
               form.querySelector("[name='firstName']") ||
               form.querySelector("[name='first_name']") ||
@@ -82,19 +81,21 @@
           return true;
         }
 
-        // 3) Try now (in case form is already rendered)
+        // Try immediately
         if (attachEmailHandler()) return;
 
-        // 4) Observe DOM until the form appears (reliable for React/Vite)
+        // Observe DOM until form appears
         const observer = new MutationObserver(function () {
           if (attachEmailHandler()) observer.disconnect();
         });
 
-        observer.observe(document.documentElement, {
-          childList: true,
-          subtree: true
-        });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
       })();
     </script>
+
+    <!-- Work Section Injector (Videos, Canva Designs, Photoshop Edits)
+         Create this file at: ./assets/work-section.js
+    -->
+    <script defer src="./assets/work-section.js"></script>
   </body>
 </html>
