@@ -47,10 +47,9 @@
     ],
 
     graphicDesigns: [
-      { title: "Festival Poster", desc: "Bright event poster layout and typography.", src: "./images/portfolio-design-1.jpg" },
-      { title: "Coffee Promo", desc: "Product creative with bold focal point.", src: "./images/portfolio-design-2.jpg" },
-      { title: "Poster Design", desc: "Modern style key visual.", src: "./images/portfolio-design-3.jpg" }
-      { title: "Poster Design", desc: "Modern style key visual.", src: "./images/portfolio-design-3.jpg" }
+      { title: "Festival Poster", desc: "Bright event poster layout and typography.", src: "images/portfolio-design-1.jpg" },
+      { title: "Coffee Promo", desc: "Product creative with bold focal point.", src: "images/portfolio-design-2.jpg" },
+      { title: "Poster Design", desc: "Modern style key visual.", src: "images/portfolio-design-3.jpg" }
     ]
   };
 
@@ -305,10 +304,11 @@
   }
 
   function buildCardImage(i, altPrefix) {
+    const src = String(i.src || "").trim();
     return `
-      <a class="work-card" href="${i.src}" target="_blank" rel="noreferrer">
+      <a class="work-card" href="${escapeHtml(src)}" target="_blank" rel="noreferrer">
         <div class="image-thumb">
-          <img src="${i.src}" alt="${escapeHtml(altPrefix)} - ${escapeHtml(i.title)}" loading="lazy" />
+          <img src="${escapeHtml(src)}" alt="${escapeHtml(altPrefix)} - ${escapeHtml(i.title)}" loading="lazy" />
         </div>
         <div class="work-meta">
           <h3 class="work-name">${escapeHtml(i.title)}</h3>
@@ -432,9 +432,3 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
-
-
-
-
-
-
