@@ -1,11 +1,33 @@
 /* assets/work-section.js
-   - Videos: Google Drive preview embeds in a consistent 16:9 frame
-   - Canva Designs: images
-   - Photoshop Edits: images
+   Tabbed gallery section:
+   1) Website Builds (3 unique website concepts)
+   2) Videos (Google Drive preview embeds in a consistent 16:9 frame)
+   3) Canva Designs (images)
 */
 
 (function () {
   const CONFIG = {
+    websiteBuilds: [
+      {
+        type: "Fast Food Chain",
+        title: "QuickBite Fast Food",
+        desc: "Menu layout, featured deals, store locations, and strong order now calls to action.",
+        href: "https://YOUR-FASTFOOD-LINK-HERE.com"
+      },
+      {
+        type: "Medical Clinic",
+        title: "ClearCare Medical Clinic",
+        desc: "Services, doctor profiles, appointment booking section, and trust-focused design.",
+        href: "https://YOUR-CLINIC-LINK-HERE.com"
+      },
+      {
+        type: "SaaS Landing Page",
+        title: "FlowPilot SaaS",
+        desc: "Modern landing page with features, pricing, testimonials, and conversion sections.",
+        href: "https://YOUR-SAAS-LINK-HERE.com"
+      }
+    ],
+
     videos: [
       {
         title: "Festival Cuts",
@@ -28,11 +50,6 @@
       { title: "Festival Poster", desc: "Bright event poster layout and typography.", src: "./images/portfolio-design-1.jpg" },
       { title: "Coffee Promo", desc: "Product creative with bold focal point.", src: "./images/portfolio-design-2.jpg" },
       { title: "Poster Design", desc: "Modern style key visual.", src: "./images/portfolio-design-3.jpg" }
-    ],
-
-    photoshopEdits: [
-      { title: "Before", desc: "Balance, clarity, and background cleanup.", src: "./images/portfolio-photo-1.jpg" },
-      { title: "After", desc: "Balance, clarity, and background cleanup.", src: "./images/portfolio-photo-2.jpg" }
     ]
   };
 
@@ -139,6 +156,25 @@
       .work-meta{
         padding:14px 14px 16px;
       }
+      .work-type{
+        display:inline-flex;
+        align-items:center;
+        gap:8px;
+        font-size:12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(226, 232, 240, 0.68);
+        margin: 0 0 8px;
+      }
+      .work-type .dot{
+        width: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: rgba(245, 158, 11, 0.9);
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
+        flex: 0 0 auto;
+      }
+
       .work-name{
         margin:0 0 6px;
         font-size:18px;
@@ -164,8 +200,66 @@
         display:block;
       }
 
-      /* VIDEO: always landscape 16:9.
-         Portrait clips will naturally show with black side space INSIDE the Drive player. */
+      /* WEBSITE BUILDS */
+      .site-thumb{
+        width:100%;
+        aspect-ratio: 16 / 10;
+        background: rgba(2,6,23,0.6);
+        position:relative;
+        overflow:hidden;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+      .site-thumb:before{
+        content:"";
+        position:absolute;
+        inset:-45%;
+        background:
+          radial-gradient(circle at 25% 25%, rgba(245,158,11,0.20), transparent 60%),
+          radial-gradient(circle at 70% 65%, rgba(30,58,138,0.20), transparent 60%);
+        transform: rotate(8deg);
+      }
+      .site-badge{
+        position:absolute;
+        left:12px;
+        top:12px;
+        background: rgba(15, 23, 42, 0.70);
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        color: rgba(226, 232, 240, 0.90);
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+      }
+      .site-cta{
+        position:absolute;
+        right:12px;
+        top:12px;
+        background: rgba(245, 158, 11, 0.14);
+        border: 1px solid rgba(245, 158, 11, 0.28);
+        color: rgba(245, 158, 11, 0.95);
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+      }
+      .site-icon{
+        position:relative;
+        width:56px;
+        height:56px;
+        border-radius:18px;
+        background: rgba(245, 158, 11, 0.12);
+        border: 1px solid rgba(245, 158, 11, 0.22);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+      .site-icon svg{
+        width:28px;
+        height:28px;
+        fill:#f59e0b;
+      }
+
+      /* VIDEO: always landscape 16:9 */
       .video-embed{
         position:relative;
         width:100%;
@@ -223,6 +317,32 @@
     `;
   }
 
+  function buildCardWebsite(w) {
+    const href = String(w.href || "").trim();
+    const safeHref = href || "#";
+    const disabled = !href;
+
+    return `
+      <a class="work-card" href="${escapeHtml(safeHref)}" target="_blank" rel="noreferrer" ${disabled ? 'aria-disabled="true" onclick="return false;"' : ""}>
+        <div class="site-thumb">
+          <span class="site-badge">${escapeHtml(w.type)}</span>
+          <span class="site-cta">${disabled ? "Add link" : "Open site"}</span>
+          <div class="site-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"></path>
+              <path d="M19 19H5V5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7z"></path>
+            </svg>
+          </div>
+        </div>
+        <div class="work-meta">
+          <p class="work-type"><span class="dot"></span>${escapeHtml(w.type)}</p>
+          <h3 class="work-name">${escapeHtml(w.title)}</h3>
+          <p class="work-desc">${escapeHtml(w.desc)}</p>
+        </div>
+      </a>
+    `;
+  }
+
   function sectionHTML() {
     return `
       <section id="work" class="work-section">
@@ -230,17 +350,23 @@
           <p class="work-kicker">MY WORK</p>
           <h2 class="work-title">My Creative Work</h2>
           <p class="work-subtitle">
-            Welcome to my portfolio. This is where I share my edited videos, creative designs, and graphic work.
+            Welcome to my portfolio. This is where I share my website builds, edited videos, and creative designs.
             Each piece shows what I can do and what I enjoy working on.
           </p>
 
           <div class="work-tabs" role="tablist" aria-label="Creative work tabs">
-            <button class="work-tab is-active" type="button" role="tab" aria-selected="true" data-tab="videos">Videos</button>
+            <button class="work-tab is-active" type="button" role="tab" aria-selected="true" data-tab="websites">Website Builds</button>
+            <button class="work-tab" type="button" role="tab" aria-selected="false" data-tab="videos">Videos</button>
             <button class="work-tab" type="button" role="tab" aria-selected="false" data-tab="canva">Canva Designs</button>
-            <button class="work-tab" type="button" role="tab" aria-selected="false" data-tab="photoshop">Photoshop Edits</button>
           </div>
 
-          <div class="work-panel is-active" role="tabpanel" data-panel="videos">
+          <div class="work-panel is-active" role="tabpanel" data-panel="websites">
+            <div class="work-grid">
+              ${CONFIG.websiteBuilds.map(buildCardWebsite).join("")}
+            </div>
+          </div>
+
+          <div class="work-panel" role="tabpanel" data-panel="videos">
             <div class="work-grid">
               ${CONFIG.videos.map(buildCardVideo).join("")}
             </div>
@@ -249,12 +375,6 @@
           <div class="work-panel" role="tabpanel" data-panel="canva">
             <div class="work-grid">
               ${CONFIG.canvaDesigns.map((i) => buildCardImage(i, "Canva Design")).join("")}
-            </div>
-          </div>
-
-          <div class="work-panel" role="tabpanel" data-panel="photoshop">
-            <div class="work-grid">
-              ${CONFIG.photoshopEdits.map((i) => buildCardImage(i, "Photoshop Edit")).join("")}
             </div>
           </div>
         </div>
@@ -279,7 +399,7 @@
     }
 
     tabs.forEach((btn) => btn.addEventListener("click", () => activate(btn.dataset.tab)));
-    activate("videos");
+    activate("websites");
   }
 
   function findTargetSection() {
@@ -311,4 +431,3 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
-
