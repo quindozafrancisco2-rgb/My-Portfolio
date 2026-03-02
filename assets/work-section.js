@@ -46,7 +46,7 @@
       }
     ],
 
-    canvaDesigns: [
+    graphicDesigns: [
       { title: "Festival Poster", desc: "Bright event poster layout and typography.", src: "./images/portfolio-design-1.jpg" },
       { title: "Coffee Promo", desc: "Product creative with bold focal point.", src: "./images/portfolio-design-2.jpg" },
       { title: "Poster Design", desc: "Modern style key visual.", src: "./images/portfolio-design-3.jpg" }
@@ -357,7 +357,7 @@
           <div class="work-tabs" role="tablist" aria-label="Creative work tabs">
             <button class="work-tab is-active" type="button" role="tab" aria-selected="true" data-tab="websites">Website Builds</button>
             <button class="work-tab" type="button" role="tab" aria-selected="false" data-tab="videos">Videos</button>
-            <button class="work-tab" type="button" role="tab" aria-selected="false" data-tab="canva">Graphic Designs</button>
+            <button class="work-tab" type="button" role="tab" aria-selected="false" data-tab="graphic">Graphic Designs</button>
           </div>
 
           <div class="work-panel is-active" role="tabpanel" data-panel="websites">
@@ -372,9 +372,9 @@
             </div>
           </div>
 
-          <div class="work-panel" role="tabpanel" data-panel="canva">
+          <div class="work-panel" role="tabpanel" data-panel="graphic">
             <div class="work-grid">
-              ${CONFIG.canvaDesigns.map((i) => buildCardImage(i, "Canva Design")).join("")}
+              ${CONFIG.graphicDesigns.map((i) => buildCardImage(i, "Graphic Designs")).join("")}
             </div>
           </div>
         </div>
@@ -431,4 +431,5 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
+
 
