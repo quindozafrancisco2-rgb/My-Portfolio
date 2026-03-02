@@ -63,7 +63,6 @@
         desc: "AI-assisted firefly detection and monitoring system using ESP32-CAM with real-time image capture, RTC-based logging, and web server integration for environmental observation.",
         tech: ["ESP32-CAM", "Computer Vision", "RTC (DS3231)", "WiFi Web Server"],
         src: "images/engineering-firefly-system.jpg",
-        href: ""
       },
       {
         type: "Embedded System",
@@ -71,7 +70,6 @@
         desc: "Camera capture workflow with reliable timekeeping, logging, and stability improvements for long runs.",
         tech: ["ESP32-CAM", "RTC (DS3231)", "WiFi", "Web Server"],
         src: "images/engineering-esp32cam.jpg",
-        href: ""
       },
       {
         type: "Robotics",
@@ -79,7 +77,6 @@
         desc: "Real-time detection using a ToF sensor with microcontroller integration for responsive distance sensing.",
         tech: ["ToF Sensor", "Arduino", "Real-Time Sensing"],
         src: "images/engineering-obstacle-detection.jpg",
-        href: ""
       }
     ]
   };
@@ -558,3 +555,4 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
+
