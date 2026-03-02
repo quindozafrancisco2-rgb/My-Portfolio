@@ -12,7 +12,7 @@
         type: "Fast Food Chain",
         title: "QuickBite Fast Food",
         desc: "Menu layout, featured deals, store locations, and strong order now calls to action.",
-        href: "https://YOUR-FASTFOOD-LINK-HERE.com"
+        href: "https://quindozafrancisco2-rgb.github.io/Fast-Food-Website/"
       },
       {
         type: "Medical Clinic",
@@ -431,5 +431,6 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
+
 
 
