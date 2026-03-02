@@ -2,32 +2,31 @@
    Inserts a Certificates section right BEFORE the Work section (#work).
 */
 (function () {
-  // Update these paths to match your deployed folder structure.
-  // Recommended: put images in ./assets/images/ then use href: "./assets/images/filename.jpg"
+  // Images are in the root /images folder (same level as /assets)
   const CERTS = [
     {
       title: "Intern of the Month",
       issuer: "Lucid Strategies LLC",
       year: "May 2025",
-      href: "images/intern-of-the-month.jpg"
+      href: "./images/intern-of-the-month.jpg"
     },
     {
       title: "Certificate of Internship",
       issuer: "Lucid Strategies LLC",
       year: "2025",
-      href: "images/certificate-of-internship.jpg"
+      href: "./images/certificate-of-internship.jpg"
     },
     {
       title: "ICpEP R4B CpExplore 2021 – Certificate of Participation",
       issuer: "Institute of Computer Engineers of the Philippines (ICpEP)",
       year: "2021",
-      href: "images/icpep-cpexplore-2021.jpg"
+      href: "./images/icpep-cpexplore-2021.jpg"
     },
     {
       title: "CERT Operations: Vulnerability Management",
       issuer: "Department of Information and Communications Technology (DICT)",
       year: "Nov 23, 2022",
-      href: "images/dict-cert-vulnerability-management-2022.jpg"
+      href: "./images/dict-cert-vulnerability-management-2022.jpg"
     }
   ];
 
@@ -221,6 +220,7 @@
         cursor: pointer;
         font-size: 13px;
         transition: transform 0.12s ease, border-color 0.12s ease;
+        text-decoration: none;
       }
       .cert-btn:hover{
         transform: translateY(-1px);
@@ -266,7 +266,6 @@
       const issuer = escapeHtml(c.issuer);
       const year = escapeHtml(c.year);
 
-      // Use a button-like div when disabled, otherwise clickable anchor
       const tag = disabled ? "div" : "a";
       const attrs = disabled
         ? `class="cert-card" aria-disabled="true"`
@@ -330,7 +329,6 @@
     lb.classList.add("is-open");
     lb.setAttribute("aria-hidden", "false");
 
-    // Prevent background scroll
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
   }
@@ -359,17 +357,14 @@
 
     closeBtn.addEventListener("click", closeLightbox);
 
-    // Click outside modal closes
     lb.addEventListener("click", (e) => {
       if (e.target === lb) closeLightbox();
     });
 
-    // ESC closes
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeLightbox();
     });
 
-    // Intercept card clicks to open modal
     const section = document.getElementById("certificates");
     if (!section) return;
 
@@ -380,11 +375,9 @@
       const href = a.getAttribute("href");
       const idx = a.getAttribute("data-cert-index");
 
-      // If user holds Ctrl/Meta or middle-click, allow opening normally
       const isNewTabIntent = e.ctrlKey || e.metaKey || e.button === 1;
       if (isNewTabIntent) return;
 
-      // Open modal instead of navigating
       e.preventDefault();
 
       const cert = CERTS[Number(idx)] || {};
@@ -401,8 +394,6 @@
     if (!work) return false;
 
     work.insertAdjacentHTML("beforebegin", sectionHTML());
-
-    // Now that it's in DOM, bind events
     bindLightboxEvents();
 
     return true;
@@ -416,5 +407,3 @@
     if (insertBeforeWork() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
-
-
