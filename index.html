@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Francisco Quindoza - Virtual Assistant</title>
 
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BWQW8RC3GJ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-BWQW8RC3GJ');
+    </script>
+
     <!-- Your built app -->
     <script type="module" crossorigin src="./assets/index--t5PLDKS.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-CeQYuxiB.css" />
@@ -97,9 +106,12 @@
     <script defer src="./assets/work-section.js"></script>
     <!-- Certificate Section Injector -->
     <script defer src="./assets/certificates-section.js"></script>
-    <!-- Rename Portfolio tab to Sample Works and link it to the Work section -->
+    <!-- Add extra tools -->
     <script defer src="./assets/tools-append.js"></script>
+    <!-- Mobile menu blur backdrop -->
     <script defer src="./assets/mobile-menu-blur.js"></script>
+
+    <!-- Rename Portfolio tab to Sample Works and link it to the Work section -->
     <script>
       (function () {
         // Common IDs your Work section might use
