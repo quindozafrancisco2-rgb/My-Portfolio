@@ -18,7 +18,7 @@
         type: "Medical Clinic",
         title: "ClearCare Medical Clinic",
         desc: "Services, doctor profiles, appointment booking section, and trust-focused design.",
-        href: "https://YOUR-CLINIC-LINK-HERE.com"
+        href: "https://quindozafrancisco2-rgb.github.io/Clinic-Website/"
       },
       {
         type: "SaaS Landing Page",
@@ -431,6 +431,7 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
+
 
 
 
