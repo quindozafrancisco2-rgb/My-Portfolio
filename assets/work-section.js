@@ -3,7 +3,10 @@
    1) Website Builds
    2) Videos
    3) Graphic Designs
-   4) Engineering Projects (NEW)
+   4) Engineering Projects
+   Updates:
+   - Removed "Add link" for engineering cards (only shows "View project" when href exists)
+   - Added image lightbox (click image to expand) for Graphic Designs + Engineering Projects
 */
 
 (function () {
@@ -53,9 +56,6 @@
       { title: "Poster Design", desc: "Modern style key visual.", src: "images/portfolio-design-3.jpg" }
     ],
 
-    // NEW: Engineering Projects
-    // If you have images, put them in /images and set src.
-    // If you have a link (GitHub repo, demo, Google Drive PDF), set href.
     engineeringProjects: [
       {
         type: "Computer Vision & Embedded System",
@@ -63,6 +63,7 @@
         desc: "AI-assisted firefly detection and monitoring system using ESP32-CAM with real-time image capture, RTC-based logging, and web server integration for environmental observation.",
         tech: ["ESP32-CAM", "Computer Vision", "RTC (DS3231)", "WiFi Web Server"],
         src: "images/engineering-firefly-system.jpg",
+        href: ""
       },
       {
         type: "Embedded System",
@@ -70,6 +71,7 @@
         desc: "Camera capture workflow with reliable timekeeping, logging, and stability improvements for long runs.",
         tech: ["ESP32-CAM", "RTC (DS3231)", "WiFi", "Web Server"],
         src: "images/engineering-esp32cam.jpg",
+        href: ""
       },
       {
         type: "Robotics",
@@ -77,9 +79,19 @@
         desc: "Real-time detection using a ToF sensor with microcontroller integration for responsive distance sensing.",
         tech: ["ToF Sensor", "Arduino", "Real-Time Sensing"],
         src: "images/engineering-obstacle-detection.jpg",
+        href: ""
       }
     ]
   };
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
 
   function injectStyles() {
     if (document.getElementById("workSectionStyles")) return;
@@ -220,6 +232,7 @@
         aspect-ratio: 16 / 10;
         background: rgba(2,6,23,0.6);
         overflow:hidden;
+        cursor: zoom-in;
       }
       .image-thumb img{
         width:100%;
@@ -331,23 +344,151 @@
       .card-cta span{
         color: rgba(245, 158, 11, 0.95);
       }
-      .card-cta[aria-disabled="true"]{
-        opacity: 0.6;
-        pointer-events:none;
+
+      /* LIGHTBOX */
+      .lb-backdrop{
+        position: fixed;
+        inset: 0;
+        background: rgba(2, 6, 23, 0.78);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        z-index: 99999;
+      }
+      .lb-backdrop.is-open{ display:flex; }
+      .lb-modal{
+        width: min(1100px, 100%);
+        max-height: 86vh;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid rgba(148, 163, 184, 0.20);
+        background: rgba(15, 23, 42, 0.75);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+        display:flex;
+        flex-direction: column;
+      }
+      .lb-bar{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+      }
+      .lb-title{
+        color: rgba(226,232,240,0.9);
+        font-size: 14px;
+        line-height: 1.3;
+        margin: 0;
+      }
+      .lb-close{
+        appearance:none;
+        border:1px solid rgba(148,163,184,0.22);
+        background: rgba(2,6,23,0.5);
+        color: rgba(226,232,240,0.9);
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        cursor:pointer;
+        font-size: 18px;
+        line-height: 1;
+      }
+      .lb-close:hover{
+        border-color: rgba(245,158,11,0.35);
+      }
+      .lb-body{
+        padding: 12px;
+        overflow:auto;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+      .lb-body img{
+        width: 100%;
+        height: auto;
+        max-height: 72vh;
+        object-fit: contain;
+        border-radius: 12px;
+        display:block;
       }
     `;
     document.head.appendChild(style);
   }
 
-  function escapeHtml(str) {
-    return String(str || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+  // ---------- LIGHTBOX (shared) ----------
+  function ensureLightbox() {
+    if (document.getElementById("lbBackdrop")) return;
+
+    const lb = document.createElement("div");
+    lb.id = "lbBackdrop";
+    lb.className = "lb-backdrop";
+    lb.innerHTML = `
+      <div class="lb-modal" role="dialog" aria-modal="true" aria-label="Image preview">
+        <div class="lb-bar">
+          <p class="lb-title" id="lbTitle"></p>
+          <button class="lb-close" type="button" aria-label="Close">×</button>
+        </div>
+        <div class="lb-body">
+          <img id="lbImg" alt="" />
+        </div>
+      </div>
+    `;
+    document.body.appendChild(lb);
+
+    const closeBtn = lb.querySelector(".lb-close");
+    const modal = lb.querySelector(".lb-modal");
+
+    function close() {
+      lb.classList.remove("is-open");
+      document.body.style.overflow = "";
+    }
+
+    closeBtn.addEventListener("click", close);
+
+    lb.addEventListener("click", (e) => {
+      if (!modal.contains(e.target)) close();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && lb.classList.contains("is-open")) close();
+    });
   }
 
+  function openLightbox({ src, title }) {
+    ensureLightbox();
+    const lb = document.getElementById("lbBackdrop");
+    const img = document.getElementById("lbImg");
+    const t = document.getElementById("lbTitle");
+
+    img.src = src;
+    img.alt = title || "Preview";
+    t.textContent = title || "";
+
+    lb.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function bindLightboxClicks(section) {
+    // Anything with data-lightbox="1" will open in overlay
+    const items = Array.from(section.querySelectorAll('[data-lightbox="1"]'));
+    items.forEach((el) => {
+      if (el.dataset.lbBound === "1") return;
+      el.dataset.lbBound = "1";
+
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        const src = el.getAttribute("data-src") || "";
+        const title = el.getAttribute("data-title") || "";
+        if (!src) return;
+        openLightbox({ src, title });
+      });
+    });
+  }
+
+  // ---------- CARD BUILDERS ----------
   function buildCardVideo(v) {
     const src = `https://drive.google.com/file/d/${encodeURIComponent(v.fileId)}/preview`;
     return `
@@ -363,18 +504,25 @@
     `;
   }
 
+  // Graphic Designs: click image -> lightbox
   function buildCardImage(i, altPrefix) {
     const src = String(i.src || "").trim();
+    const title = `${altPrefix} - ${i.title || ""}`.trim();
+
     return `
-      <a class="work-card" href="${escapeHtml(src)}" target="_blank" rel="noreferrer">
-        <div class="image-thumb">
-          <img src="${escapeHtml(src)}" alt="${escapeHtml(altPrefix)} - ${escapeHtml(i.title)}" loading="lazy" />
+      <article class="work-card">
+        <div class="image-thumb" role="button" tabindex="0"
+             data-lightbox="1"
+             data-src="${escapeHtml(src)}"
+             data-title="${escapeHtml(title)}"
+             aria-label="Open image preview">
+          <img src="${escapeHtml(src)}" alt="${escapeHtml(title)}" loading="lazy" />
         </div>
         <div class="work-meta">
           <h3 class="work-name">${escapeHtml(i.title)}</h3>
           <p class="work-desc">${escapeHtml(i.desc)}</p>
         </div>
-      </a>
+      </article>
     `;
   }
 
@@ -404,6 +552,8 @@
     `;
   }
 
+  // Engineering: click image -> lightbox; card can still be clickable if href exists.
+  // If href exists: card is <a> AND image click will stop propagation (so it opens lightbox, not link).
   function buildCardEngineering(p) {
     const href = String(p.href || "").trim();
     const hasLink = !!href;
@@ -422,18 +572,27 @@
       ? `<div class="chip-row">${p.tech.map((t) => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>`
       : "";
 
+    // Only show CTA if href exists (no "Add link")
     const cta = hasLink
-     ? `
-       <div class="card-cta">
-         <span>View project</span>
-       </div>
-     `
-     : "";
+      ? `
+        <div class="card-cta">
+          <span>View project</span>
+        </div>
+      `
+      : "";
+
+    const title = `Engineering Project - ${p.title || ""}`.trim();
 
     const thumb = hasImage
       ? `
-        <div class="image-thumb">
-          <img src="${escapeHtml(src)}" alt="Engineering Project - ${escapeHtml(p.title)}" loading="lazy" />
+        <div class="image-thumb"
+             role="button"
+             tabindex="0"
+             data-lightbox="1"
+             data-src="${escapeHtml(src)}"
+             data-title="${escapeHtml(title)}"
+             aria-label="Open image preview">
+          <img src="${escapeHtml(src)}" alt="${escapeHtml(title)}" loading="lazy" />
         </div>
       `
       : `
@@ -544,7 +703,15 @@
     target.outerHTML = sectionHTML();
 
     const newSection = document.getElementById("work");
-    if (newSection) wireTabs(newSection);
+    if (newSection) {
+      wireTabs(newSection);
+      // bind lightbox for initial render
+      bindLightboxClicks(newSection);
+      // also stop card link when clicking image inside a linked engineering card
+      newSection.querySelectorAll('[data-lightbox="1"]').forEach((el) => {
+        el.addEventListener("click", (e) => e.stopPropagation(), { capture: true });
+      });
+    }
 
     return true;
   }
@@ -557,5 +724,3 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
-
-
