@@ -9,25 +9,25 @@
       title: "Intern of the Month",
       issuer: "Lucid Strategies LLC",
       year: "May 2025",
-      href: "./images/intern-of-the-month.jpg"
+      href: "images/intern-of-the-month.jpg"
     },
     {
       title: "Certificate of Internship",
       issuer: "Lucid Strategies LLC",
       year: "2025",
-      href: "./images/certificate-of-internship.jpg"
+      href: "images/certificate-of-internship.jpg"
     },
     {
       title: "ICpEP R4B CpExplore 2021 – Certificate of Participation",
       issuer: "Institute of Computer Engineers of the Philippines (ICpEP)",
       year: "2021",
-      href: "./images/icpep-cpexplore-2021.jpg"
+      href: "images/icpep-cpexplore-2021.jpg"
     },
     {
       title: "CERT Operations: Vulnerability Management",
       issuer: "Department of Information and Communications Technology (DICT)",
       year: "Nov 23, 2022",
-      href: "./images/dict-cert-vulnerability-management-2022.jpg"
+      href: "images/dict-cert-vulnerability-management-2022.jpg"
     }
   ];
 
@@ -416,4 +416,5 @@
     if (insertBeforeWork() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
+
 
