@@ -4,9 +4,13 @@
    2) Videos
    3) Graphic Designs
    4) Engineering Projects
-   Updates:
-   - Removed "Add link" for engineering cards (only shows "View project" when href exists)
-   - Added image lightbox (click image to expand) for Graphic Designs + Engineering Projects
+
+   Updates requested:
+   - Graphic Designs: keep original behavior (click opens image in a new tab)
+   - Engineering Projects: behave the same as Graphic Designs when clicked
+     - If href exists, card opens href
+     - If href is empty, card opens the image src in a new tab
+   - Remove the "Add link" text under Engineering Projects cards (no CTA when no href)
 */
 
 (function () {
@@ -83,15 +87,6 @@
       }
     ]
   };
-
-  function escapeHtml(str) {
-    return String(str || "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
 
   function injectStyles() {
     if (document.getElementById("workSectionStyles")) return;
@@ -192,6 +187,10 @@
         transform: translateY(-2px);
         border-color: rgba(245, 158, 11, 0.35);
       }
+      .work-card[aria-disabled="true"]{
+        opacity: 0.55;
+        pointer-events:none;
+      }
 
       .work-meta{
         padding:14px 14px 16px;
@@ -232,7 +231,6 @@
         aspect-ratio: 16 / 10;
         background: rgba(2,6,23,0.6);
         overflow:hidden;
-        cursor: zoom-in;
       }
       .image-thumb img{
         width:100%;
@@ -344,151 +342,19 @@
       .card-cta span{
         color: rgba(245, 158, 11, 0.95);
       }
-
-      /* LIGHTBOX */
-      .lb-backdrop{
-        position: fixed;
-        inset: 0;
-        background: rgba(2, 6, 23, 0.78);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 18px;
-        z-index: 99999;
-      }
-      .lb-backdrop.is-open{ display:flex; }
-      .lb-modal{
-        width: min(1100px, 100%);
-        max-height: 86vh;
-        border-radius: 18px;
-        overflow: hidden;
-        border: 1px solid rgba(148, 163, 184, 0.20);
-        background: rgba(15, 23, 42, 0.75);
-        box-shadow: 0 20px 60px rgba(0,0,0,0.45);
-        display:flex;
-        flex-direction: column;
-      }
-      .lb-bar{
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap: 12px;
-        padding: 12px 14px;
-        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-      }
-      .lb-title{
-        color: rgba(226,232,240,0.9);
-        font-size: 14px;
-        line-height: 1.3;
-        margin: 0;
-      }
-      .lb-close{
-        appearance:none;
-        border:1px solid rgba(148,163,184,0.22);
-        background: rgba(2,6,23,0.5);
-        color: rgba(226,232,240,0.9);
-        width: 38px;
-        height: 38px;
-        border-radius: 12px;
-        cursor:pointer;
-        font-size: 18px;
-        line-height: 1;
-      }
-      .lb-close:hover{
-        border-color: rgba(245,158,11,0.35);
-      }
-      .lb-body{
-        padding: 12px;
-        overflow:auto;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-      }
-      .lb-body img{
-        width: 100%;
-        height: auto;
-        max-height: 72vh;
-        object-fit: contain;
-        border-radius: 12px;
-        display:block;
-      }
     `;
     document.head.appendChild(style);
   }
 
-  // ---------- LIGHTBOX (shared) ----------
-  function ensureLightbox() {
-    if (document.getElementById("lbBackdrop")) return;
-
-    const lb = document.createElement("div");
-    lb.id = "lbBackdrop";
-    lb.className = "lb-backdrop";
-    lb.innerHTML = `
-      <div class="lb-modal" role="dialog" aria-modal="true" aria-label="Image preview">
-        <div class="lb-bar">
-          <p class="lb-title" id="lbTitle"></p>
-          <button class="lb-close" type="button" aria-label="Close">×</button>
-        </div>
-        <div class="lb-body">
-          <img id="lbImg" alt="" />
-        </div>
-      </div>
-    `;
-    document.body.appendChild(lb);
-
-    const closeBtn = lb.querySelector(".lb-close");
-    const modal = lb.querySelector(".lb-modal");
-
-    function close() {
-      lb.classList.remove("is-open");
-      document.body.style.overflow = "";
-    }
-
-    closeBtn.addEventListener("click", close);
-
-    lb.addEventListener("click", (e) => {
-      if (!modal.contains(e.target)) close();
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && lb.classList.contains("is-open")) close();
-    });
+  function escapeHtml(str) {
+    return String(str || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
-  function openLightbox({ src, title }) {
-    ensureLightbox();
-    const lb = document.getElementById("lbBackdrop");
-    const img = document.getElementById("lbImg");
-    const t = document.getElementById("lbTitle");
-
-    img.src = src;
-    img.alt = title || "Preview";
-    t.textContent = title || "";
-
-    lb.classList.add("is-open");
-    document.body.style.overflow = "hidden";
-  }
-
-  function bindLightboxClicks(section) {
-    // Anything with data-lightbox="1" will open in overlay
-    const items = Array.from(section.querySelectorAll('[data-lightbox="1"]'));
-    items.forEach((el) => {
-      if (el.dataset.lbBound === "1") return;
-      el.dataset.lbBound = "1";
-
-      el.addEventListener("click", (e) => {
-        e.preventDefault();
-        const src = el.getAttribute("data-src") || "";
-        const title = el.getAttribute("data-title") || "";
-        if (!src) return;
-        openLightbox({ src, title });
-      });
-    });
-  }
-
-  // ---------- CARD BUILDERS ----------
   function buildCardVideo(v) {
     const src = `https://drive.google.com/file/d/${encodeURIComponent(v.fileId)}/preview`;
     return `
@@ -504,25 +370,22 @@
     `;
   }
 
-  // Graphic Designs: click image -> lightbox
+  // Graphic Designs: original behavior (opens image in new tab)
   function buildCardImage(i, altPrefix) {
     const src = String(i.src || "").trim();
-    const title = `${altPrefix} - ${i.title || ""}`.trim();
+    const safeHref = src || "#";
+    const disabled = !src;
 
     return `
-      <article class="work-card">
-        <div class="image-thumb" role="button" tabindex="0"
-             data-lightbox="1"
-             data-src="${escapeHtml(src)}"
-             data-title="${escapeHtml(title)}"
-             aria-label="Open image preview">
-          <img src="${escapeHtml(src)}" alt="${escapeHtml(title)}" loading="lazy" />
+      <a class="work-card" href="${escapeHtml(safeHref)}" target="_blank" rel="noreferrer" ${disabled ? 'aria-disabled="true" onclick="return false;"' : ""}>
+        <div class="image-thumb">
+          <img src="${escapeHtml(src)}" alt="${escapeHtml(altPrefix)} - ${escapeHtml(i.title)}" loading="lazy" />
         </div>
         <div class="work-meta">
           <h3 class="work-name">${escapeHtml(i.title)}</h3>
           <p class="work-desc">${escapeHtml(i.desc)}</p>
         </div>
-      </article>
+      </a>
     `;
   }
 
@@ -552,28 +415,25 @@
     `;
   }
 
-  // Engineering: click image -> lightbox; card can still be clickable if href exists.
-  // If href exists: card is <a> AND image click will stop propagation (so it opens lightbox, not link).
+  // Engineering Projects: same behavior as Graphic Designs when clicked
+  // - If href exists -> open href
+  // - If href empty -> open image src
+  // - No "Add link" CTA under the card
   function buildCardEngineering(p) {
     const href = String(p.href || "").trim();
-    const hasLink = !!href;
-
     const src = String(p.src || "").trim();
-    const hasImage = !!src;
 
-    const tag = hasLink ? "a" : "article";
-    const attrs = hasLink
-      ? `class="work-card" href="${escapeHtml(href)}" target="_blank" rel="noreferrer"`
-      : `class="work-card"`;
+    const finalHref = href || src || "#";
+    const disabled = !href && !src;
 
     const typeLine = p.type ? `<p class="work-type"><span class="dot"></span>${escapeHtml(p.type)}</p>` : "";
 
-    const chips = Array.isArray(p.tech) && p.tech.length
-      ? `<div class="chip-row">${p.tech.map((t) => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>`
-      : "";
+    const chips =
+      Array.isArray(p.tech) && p.tech.length
+        ? `<div class="chip-row">${p.tech.map((t) => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>`
+        : "";
 
-    // Only show CTA if href exists (no "Add link")
-    const cta = hasLink
+    const cta = href
       ? `
         <div class="card-cta">
           <span>View project</span>
@@ -581,24 +441,16 @@
       `
       : "";
 
-    const title = `Engineering Project - ${p.title || ""}`.trim();
-
-    const thumb = hasImage
+    const thumb = src
       ? `
-        <div class="image-thumb"
-             role="button"
-             tabindex="0"
-             data-lightbox="1"
-             data-src="${escapeHtml(src)}"
-             data-title="${escapeHtml(title)}"
-             aria-label="Open image preview">
-          <img src="${escapeHtml(src)}" alt="${escapeHtml(title)}" loading="lazy" />
+        <div class="image-thumb">
+          <img src="${escapeHtml(src)}" alt="Engineering Project - ${escapeHtml(p.title)}" loading="lazy" />
         </div>
       `
       : `
         <div class="site-thumb">
           <span class="site-badge">Engineering</span>
-          <span class="site-cta">${hasLink ? "Open" : "Add image"}</span>
+          <span class="site-cta">Add image</span>
           <div class="site-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24">
               <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.11-.2-.36-.28-.57-.2l-2.39.96c-.5-.38-1.04-.7-1.64-.94l-.36-2.54A.488.488 0 0014 1h-4c-.24 0-.44.17-.48.4l-.36 2.54c-.6.24-1.15.56-1.64.94l-2.39-.96c-.21-.08-.46 0-.57.2L.63 7.44c-.11.2-.06.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L.75 14.52c-.18.14-.23.41-.12.61l1.92 3.32c.11.2.36.28.57.2l2.39-.96c.5.38 1.04.7 1.64.94l.36 2.54c.04.23.24.4.48.4h4c.24 0 .44-.17.48-.4l.36-2.54c.6-.24 1.15-.56 1.64-.94l2.39.96c.21.08.46 0 .57-.2l1.92-3.32c.11-.2.06-.47-.12-.61l-2.03-1.58zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5S10.07 8.5 12 8.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"></path>
@@ -608,7 +460,7 @@
       `;
 
     return `
-      <${tag} ${attrs}>
+      <a class="work-card" href="${escapeHtml(finalHref)}" target="_blank" rel="noreferrer" ${disabled ? 'aria-disabled="true" onclick="return false;"' : ""}>
         ${thumb}
         <div class="work-meta">
           ${typeLine}
@@ -617,7 +469,7 @@
           ${chips}
           ${cta}
         </div>
-      </${tag}>
+      </a>
     `;
   }
 
@@ -703,15 +555,7 @@
     target.outerHTML = sectionHTML();
 
     const newSection = document.getElementById("work");
-    if (newSection) {
-      wireTabs(newSection);
-      // bind lightbox for initial render
-      bindLightboxClicks(newSection);
-      // also stop card link when clicking image inside a linked engineering card
-      newSection.querySelectorAll('[data-lightbox="1"]').forEach((el) => {
-        el.addEventListener("click", (e) => e.stopPropagation(), { capture: true });
-      });
-    }
+    if (newSection) wireTabs(newSection);
 
     return true;
   }
