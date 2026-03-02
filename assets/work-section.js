@@ -2,7 +2,7 @@
    Tabbed gallery section:
    1) Website Builds (3 unique website concepts)
    2) Videos (Google Drive preview embeds in a consistent 16:9 frame)
-   3) Canva Designs (images)
+   3) Graphic Designs (images)
 */
 
 (function () {
@@ -357,7 +357,7 @@
           <div class="work-tabs" role="tablist" aria-label="Creative work tabs">
             <button class="work-tab is-active" type="button" role="tab" aria-selected="true" data-tab="websites">Website Builds</button>
             <button class="work-tab" type="button" role="tab" aria-selected="false" data-tab="videos">Videos</button>
-            <button class="work-tab" type="button" role="tab" aria-selected="false" data-tab="canva">Canva Designs</button>
+            <button class="work-tab" type="button" role="tab" aria-selected="false" data-tab="canva">Graphic Designs</button>
           </div>
 
           <div class="work-panel is-active" role="tabpanel" data-panel="websites">
@@ -431,3 +431,4 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
+
