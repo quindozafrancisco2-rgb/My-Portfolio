@@ -422,11 +422,13 @@
       ? `<div class="chip-row">${p.tech.map((t) => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>`
       : "";
 
-    const cta = `
-      <div class="card-cta" ${hasLink ? "" : 'aria-disabled="true"'}>
-        <span>${hasLink ? "View project" : "Add link"}</span>
-      </div>
-    `;
+    const cta = hasLink
+     ? `
+       <div class="card-cta">
+         <span>View project</span>
+       </div>
+     `
+     : "";
 
     const thumb = hasImage
       ? `
@@ -555,4 +557,5 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
+
 
