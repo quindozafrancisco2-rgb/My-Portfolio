@@ -50,6 +50,7 @@
       { title: "Festival Poster", desc: "Bright event poster layout and typography.", src: "./images/portfolio-design-1.jpg" },
       { title: "Coffee Promo", desc: "Product creative with bold focal point.", src: "./images/portfolio-design-2.jpg" },
       { title: "Poster Design", desc: "Modern style key visual.", src: "./images/portfolio-design-3.jpg" }
+      { title: "Poster Design", desc: "Modern style key visual.", src: "./images/portfolio-design-3.jpg" }
     ]
   };
 
@@ -431,6 +432,7 @@
     if (replaceSection() || tries >= maxTries) clearInterval(timer);
   }, 300);
 })();
+
 
 
 
