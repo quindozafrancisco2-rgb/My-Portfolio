@@ -96,33 +96,88 @@
     <!-- Work Section Injector (Videos, Canva Designs, Photoshop Edits) -->
     <script defer src="./assets/work-section.js"></script>
 
-    <!-- Rename Portfolio tab to Sample Works and link it to #work -->
+    <!-- Rename Portfolio tab to Sample Works and link it to the Work section -->
     <script>
       (function () {
+        // Common IDs your Work section might use
+        const possibleIds = ["work", "works", "sample-works", "sampleworks", "portfolio"];
+
+        function findWorkTarget() {
+          // 1) Try common IDs first
+          for (const id of possibleIds) {
+            const el = document.getElementById(id);
+            if (el) return el;
+          }
+
+          // 2) Fallback: locate a heading containing "Sample Works" / "Work" / "Portfolio"
+          const headings = Array.from(document.querySelectorAll("h1,h2,h3"));
+          const h = headings.find((x) => {
+            const t = (x.textContent || "").trim().toLowerCase();
+            return (
+              t.includes("sample works") ||
+              t.includes("sample work") ||
+              t === "work" ||
+              t.includes("portfolio")
+            );
+          });
+
+          if (h) return h.closest("section, main, div") || h;
+
+          return null;
+        }
+
+        function scrollToWork() {
+          const target = findWorkTarget();
+          if (!target) return false;
+
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+          // Keep a consistent hash (even if the real id is different)
+          try {
+            history.replaceState(null, "", "#work");
+          } catch (e) {}
+
+          return true;
+        }
+
         function applyNavFix() {
           // Find links/buttons that say "Portfolio" and convert them
           const candidates = Array.from(document.querySelectorAll("a, button"));
-
           let changed = false;
 
           candidates.forEach((el) => {
             const text = (el.textContent || "").trim().toLowerCase();
-            if (text === "portfolio") {
+
+            // Handle both "portfolio" and already "sample works"
+            if (text === "portfolio" || text === "sample works") {
               el.textContent = "Sample Works";
 
-              // If it's an <a>, set href to #work
+              // If it's an <a>, set href to #work (for semantics)
               if (el.tagName.toLowerCase() === "a") {
                 el.setAttribute("href", "#work");
               }
 
-              // Ensure click scrolls to #work for both <a> and <button>
+              // Prevent binding multiple times
+              if (el.dataset.workBound === "1") {
+                changed = true;
+                return;
+              }
+              el.dataset.workBound = "1";
+
+              // Ensure click scrolls even if React/Injector renders late
               el.addEventListener("click", function (e) {
-                const target = document.getElementById("work");
-                if (target) {
-                  e.preventDefault();
-                  target.scrollIntoView({ behavior: "smooth", block: "start" });
-                  history.replaceState(null, "", "#work");
-                }
+                e.preventDefault();
+
+                // Try immediately
+                if (scrollToWork()) return;
+
+                // Retry briefly if target isn't in DOM yet
+                let attempts = 0;
+                const maxAttempts = 20;
+                const timer = setInterval(() => {
+                  attempts += 1;
+                  if (scrollToWork() || attempts >= maxAttempts) clearInterval(timer);
+                }, 200);
               });
 
               changed = true;
@@ -134,7 +189,7 @@
 
         // React renders async, so retry a few times
         let tries = 0;
-        const maxTries = 30;
+        const maxTries = 40;
 
         const t = setInterval(() => {
           const ok = applyNavFix();
@@ -142,7 +197,7 @@
 
           // Stop once found OR after max tries
           if (ok || tries >= maxTries) clearInterval(t);
-        }, 300);
+        }, 250);
       })();
     </script>
   </body>
